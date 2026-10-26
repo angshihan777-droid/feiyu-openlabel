@@ -1,0 +1,12 @@
+[tool.pytest.ini_options]
+testpaths = ["services/web-api/tests", "services/web-api/src"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "ee: Enterprise Edition tests (FY_EDITION=ee)",
+    "saas: SaaS Edition tests (FY_EDITION=saas)",
+    "ce: Community Edition tests (FY_EDITION=ce)",
+]
+addopts = "-ra --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,0 +1,57 @@
+// Lab design system — entry point
+//
+// Loaded AFTER _component-patches.scss in each main.ts. Order matters:
+//   1. tokens/*         — base :root variables
+//   2. _element-overrides, _component-patches — EP bridges
+//   3. lab/_index       — overrides everything to lab aesthetic
+//   4. lab/_ep-bridge   — re-skins remaining EP components
+//
+// 大肥鱼标注台：白蓝色视觉系统
+
+@use 'palette';
+@use 'shape';
+@use 'shadow';
+@use 'motion';
+@use 'textures';
+
+// Page-level defaults
+body {
+  background-color: var(--lab-paper);
+  color: var(--lab-ink);
+  font-family: var(--y-font-family-base);
+  font-size: var(--y-font-size-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Headings use the CJK-first display face.
+h1, h2, h3 {
+  font-family: var(--y-font-family-display);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--lab-ink);
+}
+
+// All numerics default to mono + tabular
+.font-mono, .tabular {
+  font-family: var(--y-font-family-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+// Accent period after Chinese titles.
+.lab-title-period {
+  color: var(--y-color-primary);
+  font-style: normal;
+}
+
+// Mono English mini-label above each functional section (design.md §2)
+.lab-mono-label {
+  font-family: var(--y-font-family-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lab-ash);
+}

@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "feiyu"
+dynamic = ["version"]
+readme = "README.md"
+authors = [
+    {name = "Ashia", email = "angshihan777@gmail.com"},
+]
+
+requires-python = ">=3.12"
+license-files = ["LICENSE"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: AGPL-3.0 License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+    "pymongo>=4.8.0",
+    "click",
+    "python-dotenv>=1.1.1",
+    "fastapi>=0.114.0",
+    "uvicorn>=0.29.0",
+    "pydash>=8.0.3",
+    "json5>=0.9.25",
+    "tortoise-orm>=0.25.1",
+    "pydantic-settings>=2.4.0",
+    "passlib[argon2]>=1.7.4",
+    "loguru>=0.7.2",
+    "redis>=5.0.8",
+    "psutil>=6.0.0",
+    "distro>=1.9.0",
+    "opencv-python>=4.10.0.84",
+    "Pillow>=10.4.0",
+    "numpy>=2.1.1",
+    "pydantic[email]>=2.9.2",
+    "pyjwt>=2.9.0",
+    "asyncpg>=0.29.0",
+    "jinja2>=3.1.4",
+    "httpx>=0.28.1",
+    "python-multipart>=0.0.20",
+    "PyYAML>=6.0.2",
+    "babel>=2.17.0",
+    "sqlalchemy[asyncio]>=2.0.41",
+    "aiosqlite>=0.20.0",
+    # 邮件:用 PyPI 上的 emails 包(替换原 libs/python-emails 源码依赖)。
+    # extras:html → HTML 邮件解析/转换(cssutils/lxml/premailer 等);
+    #         jinja2 → emails.template.JinjaTemplate 模板渲染。
+    "emails[html,jinja2]>=1.1.2",
+    # 监控:Prometheus 指标暴露(EE 加载,FY_EDITION>=ee)。CE 不依赖此包也能装配,
+    # 因为 metrics.py 仅在 HAS_EE 分支里 import。
+    "prometheus-fastapi-instrumentator>=7.0.0",
+    # SSO LDAP 凭据验证(EE 加载)。OIDC 用主代码已有的 httpx 直接 HTTP,无需 authlib。
+    # ldap3 同步 API,在 async 视图里通过 asyncio.to_thread 跑。
+    "ldap3>=2.9.1",
+    # 计费 Stripe webhook(SaaS 加载,FY_EDITION==saas)。
+    "stripe>=10.0.0",
+    # passlib 仍依赖 pkg_resources,setuptools 81+ 已移除,这里显式 pin
+    "setuptools<81",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+
+[tool.setuptools.package-data]
+"feiyu_app.migrations" = ["*.sql"]
+"feiyu_app" = ["assets/*.mp4"]
+
+[project.optional-dependencies]
+lint = ["black[jupyter]", "mypy", "ruff"]
+test = ["pytest", "debugpy", "fastapi", "httpx", "aerich", "pytest-asyncio"]
+
+# 注:阶段 2 换上源端代码后,把下面的 tortoise_orm 路径改为 feiyu_app.config.settings.TORTOISE_ORM
+# (源端 config 在 feiyu_app/config.py,目标端在 feiyu_conf/loader.py)
+[tool.tortoise]
+tortoise_orm = "feiyu_app.config.settings.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."

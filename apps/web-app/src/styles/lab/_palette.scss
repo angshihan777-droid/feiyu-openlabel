@@ -1,0 +1,93 @@
+// Big Fat Fish annotation platform — white / blue design system
+//
+// Single source of truth for the product's calm ocean palette.
+// Loaded after src/styles/tokens/_color.scss so lab tokens override face-specific ones.
+
+:root {
+  // Surfaces
+  --lab-paper:    #f4f9ff;
+  --lab-cream:    #eaf4ff;
+  --lab-snow:     #ffffff;
+
+  // Ink scale
+  --lab-ink:      #0b2b4c;
+  --lab-graphite: #123a63;
+  --lab-slate:    #47627d;
+  --lab-ash:      #7087a0;
+  --lab-fog:      #b7c9db;
+
+  // Lines
+  --lab-line:     #d8e7f4;
+  --lab-hairline: #e8f2fa;
+
+  // Compatible aliases: lime is now the cyan interaction accent.
+  --lab-lime:     #42bff5;
+  --lab-lime-ink: #062a45;
+  --lab-coral:    #e65f57;
+
+  // Category badge colors
+  --lab-sky:      #d6eeff;
+  --lab-lilac:    #dbe7ff;
+  --lab-mint:     #d9f5e8;
+  --lab-butter:   #fff0b8;
+
+  // === Aliases into existing --y-* namespace ===
+  // Bridge so existing components using --y-color-* pick up lab palette
+  // automatically. Face-specific indigo/sky/violet are overridden.
+  --y-color-bg-canvas:       var(--lab-paper);
+  --y-color-bg-base:         var(--lab-snow);
+  --y-color-bg-card:         var(--lab-snow);
+  --y-color-bg-hover:        var(--lab-cream);
+  --y-color-bg-active:       #dfeefc;
+
+  --y-color-text-primary:     var(--lab-ink);
+  --y-color-text-regular:     var(--lab-slate);
+  --y-color-text-secondary:   var(--lab-slate);
+  --y-color-text-placeholder: var(--lab-ash);
+  --y-color-text-disabled:    var(--lab-fog);
+  --y-color-text-inverse:     var(--lab-snow);
+
+  --y-color-border:         var(--lab-line);
+  --y-color-border-light:   var(--lab-hairline);
+  --y-color-border-lighter: var(--lab-hairline);
+  --y-color-border-strong:  var(--lab-line);
+  --y-color-divider:        var(--lab-hairline);
+
+  // Brand
+  --y-color-primary:         #1677ff;
+  --y-color-primary-hover:   #0f63d9;
+  --y-color-primary-active:  #0b52b3;
+  --y-color-primary-soft:    rgba(22, 119, 255, 0.10);
+  --y-color-primary-border:  rgba(22, 119, 255, 0.32);
+
+  // Semantic — design.md uses coral for "in progress / action / warning"
+  --y-color-success: #2f7a3e;     // muted green for "完成" only
+  --y-color-warning: #d99a16;
+  --y-color-danger:  var(--lab-coral);
+  --y-color-info:    var(--lab-slate);
+
+  // Layout-specific
+  --y-color-header-bg:     var(--lab-paper);
+  --y-color-header-text:   var(--lab-ink);
+  --y-color-sidebar-bg:    var(--lab-paper);
+  --y-color-sidebar-text:  var(--lab-slate);
+  --y-color-sidebar-active: var(--lab-cream);
+
+  // Sidebar / header accent
+  --lab-accent: #1677ff;
+
+  color-scheme: light;
+}
+
+// Dark mode remains an explicit user preference. The default is white/blue.
+
+// Face override — all role workbenches share the same product palette.
+[data-face='business'],
+[data-face='admin'],
+[data-face='platform'] {
+  --y-color-primary:         #1677ff;
+  --y-color-primary-hover:   #0f63d9;
+  --y-color-primary-active:  #0b52b3;
+  --y-color-primary-soft:    rgba(22, 119, 255, 0.10);
+  --y-color-primary-border:  rgba(22, 119, 255, 0.32);
+}

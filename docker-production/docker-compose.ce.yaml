@@ -1,0 +1,91 @@
+# CE (Community Edition)
+# 用法: cp env-templates/.env.ce.template .env.ce && docker compose --env-file .env.ce -f docker-compose.ce.yaml up -d
+services:
+  postgres:
+    container_name: feiyu-ce-postgres
+    image: ${FY_POSTGRES_IMAGE:-ghcr.nju.edu.cn/ferretdb/postgres-documentdb:17-0.105.0-ferretdb-2.4.0}
+    restart: on-failure
+    environment:
+      - POSTGRES_USER=produser
+      - POSTGRES_PASSWORD=prodpass
+      - POSTGRES_DB=postgres
+      - POSTGRES_PORT=5432
+    volumes:
+      - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/data
+    networks:
+      - feiyu-ce-network
+
+  ferretdb:
+    container_name: feiyu-ce-ferretdb
+    image: ${FY_FERRETDB_IMAGE:-ghcr.nju.edu.cn/ferretdb/ferretdb:2.4.0}
+    restart: on-failure
+    environment:
+      - FERRETDB_POSTGRESQL_URL=postgres://produser:prodpass@postgres:5432/postgres
+    depends_on:
+      - postgres
+    networks:
+      - feiyu-ce-network
+
+  redis:
+    container_name: feiyu-ce-redis
+    image: redis:7.4.10-alpine
+    restart: always
+    volumes:
+      - ${REDIS_DATA_DIR}:/root/redis
+    command: redis-server
+    networks:
+      - feiyu-ce-network
+
+  web-api:
+    container_name: feiyu-ce-web-api
+    image: ${FY_BACKEND_IMAGE:-ghcr.nju.edu.cn/angshihan777-droid/feiyu-backend-ce:snapshot-ce}
+    restart: on-failure
+    ports:
+      - "${WEB_API_PORT}:8423"
+    environment:
+      - FY_EDITION=ce
+      - FY_CONFIG_FILE=/app/config/feiyu.yaml
+      - FY_JWT_SECRET=${FY_JWT_SECRET:?must set in .env.ce}
+      - FY_MEDIA_ROOT=/app/media
+      - FY_DEMO_QUICK_LOGIN=${FY_DEMO_QUICK_LOGIN:-true}
+      - FY_DEMO_ACCOUNT_DOMAIN=${FY_DEMO_ACCOUNT_DOMAIN:-example.com}
+    depends_on:
+      - ferretdb
+      - redis
+    volumes:
+      - ./app-config/ce/feiyu.yaml:/app/config/feiyu.yaml
+      - ${FY_USER_DATA_ROOT}:/app/feiyu_user_data
+      - ${FY_MEDIA_HOST_DIR}:/app/media
+      - ${LOG_ROOT}:/app/logs
+      - ./scripts/ce/init-db.sh:/app/init-db.sh
+    command: bash /app/init-db.sh
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8423/u/a/noau/demo-login/status', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 60s
+    networks:
+      - feiyu-ce-network
+
+  web-app:
+    container_name: feiyu-ce-web-app
+    image: ${FY_FRONTEND_IMAGE:-ghcr.nju.edu.cn/angshihan777-droid/feiyu-frontend-ce:snapshot-ce}
+    restart: on-failure
+    ports:
+      - "${WEB_APP_PORT}:80"
+    depends_on:
+      web-api:
+        condition: service_healthy
+    networks:
+      - feiyu-ce-network
+    volumes:
+      - ./nginx-conf/ce:/etc/nginx/conf.d
+
+networks:
+  feiyu-ce-network:
+    driver: bridge

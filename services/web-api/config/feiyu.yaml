@@ -1,0 +1,87 @@
+admin:
+  user: 'prod@feiyu.example.com'
+  password: 'feiyu'
+global:
+  mode: 'dev'
+  log:
+    level: debug
+    root_dir: 'logs'
+  weights:
+    root_dir: 'weights'
+    http_server: 'http://localhost:8401/qm-weight/'
+  datas:
+    root_dir: '/tmp/funcs-tmp'
+    http_server: 'http://localhost:7020'
+    FY_USER_DATA_ROOT: '/data1/prods/feiyu-users'
+  # 演示任务(migrations/data/1_20260825_seed_demo_jobs.py)引用的静态数据
+  # 前缀:apps/web-app/public/demo-data 经 vite/nginx 暴露的 HTTP 地址。
+  demo_data_base_url: 'http://localhost:8400/guis/feiyu/demo-data'
+  redis:
+    host: '127.0.0.1'
+    port: 6301
+    uri: 'redis://127.0.0.1:6301'
+  mongodb:
+    uri: 'mongodb://dev:dev@127.0.0.1:27017/'
+    db: 'qianmo-dev'
+  postgres:
+    host: '127.0.0.1'
+    port: 15432
+    username: 'dev'
+    password: 'dev'
+    database: 'feiyu-dev'
+    uri: 'postgresql+asyncpg://dev:dev@127.0.0.1:15432/feiyu-dev'
+    tortoise_uri: 'asyncpg://dev:dev@127.0.0.1:15432/feiyu-dev'
+  sms:
+    # 阿里云短信服务。真实 AccessKey 不要写进 git,推荐两种注入方式:
+    #   1. 环境变量(优先级最高):ALIYUN_SMS_ACCESS_KEY_ID / ALIYUN_SMS_ACCESS_KEY_SECRET
+    #   2. 部署时替换下面占位符
+    access_key_id: 'REPLACE_WITH_YOUR_ACCESS_KEY_ID'
+    access_key_secret: 'REPLACE_WITH_YOUR_ACCESS_KEY_SECRET'
+    sign_name: '格律至微'
+    template_code: 'SMS_320186056'
+    endpoint: 'dysmsapi.aliyuncs.com'
+  smtp:
+    # 验证邮件 SMTP 配置。授权码类敏感字段不要写进 git,推荐两种注入方式:
+    #   1. 环境变量(优先级最高):FY_SMTP_USER / FY_SMTP_PASSWORD
+    #   2. 部署时替换下面占位符
+    host: 'smtp.qq.com'
+    port: 465
+    ssl: true
+    user: 'REPLACE_WITH_YOUR_SMTP_USER'
+    password: 'REPLACE_WITH_YOUR_SMTP_PASSWORD'
+    mail_from: 'REPLACE_WITH_YOUR_SMTP_USER'
+  sso:
+    # 企业版 SSO 配置(EE 加载,FY_EDITION>=ee)。CE 不加载此段。
+    # 敏感字段(secret / bind_password)推荐环境变量注入:
+    #   FY_OIDC_CLIENT_SECRET  FY_LDAP_BIND_PASSWORD
+    oidc:
+      enabled: false
+      client_id: 'REPLACE_WITH_OIDC_CLIENT_ID'
+      client_secret: 'REPLACE_WITH_OIDC_CLIENT_SECRET'
+      server_url: 'https://auth.example.com'
+      redirect_uri: 'https://feiyu.example.com/api/v1/p/auth/oidc/callback'
+      frontend_redirect: '/'
+    ldap:
+      enabled: false
+      server_url: 'ldap://dc.example.com:389'
+      bind_dn_prefix: 'uid='
+      bind_dn_suffix: ',OU=Users,DC=example,DC=com'
+      search_base: 'OU=Users,DC=example,DC=com'
+      search_filter: '(uid={username})'
+      bind_password: 'REPLACE_WITH_LDAP_PASSWORD'
+  saas:
+    # SaaS 增量配置(FY_EDITION==saas 加载)。
+    # 配额默认值:新租户的默认 quota(可在 PlatformTenant.quota JSONField 覆盖)。
+    default_quota:
+      api_requests_per_day: 10000
+    billing:
+      stripe:
+        enabled: false
+        # Stripe dashboard → Developers → Webhooks → 选 endpoint → Signing secret
+        webhook_secret: 'REPLACE_WITH_STRIPE_WEBHOOK_SECRET'  # 或 FY_STRIPE_WEBHOOK_SECRET
+        # Stripe API key(sk_live_xxx 或 sk_test_xxx)
+        api_key: 'REPLACE_WITH_STRIPE_API_KEY'                # 或 FY_STRIPE_API_KEY
+  backup:
+    # EE 备份目标目录(pg_dump / mongodump 产物落地处)。
+    # systemd timer / cron 应挂载此路径,清理由外部 rotate 策略管。
+    target_dir: '/var/backups/feiyu'

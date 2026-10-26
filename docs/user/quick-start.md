@@ -10,7 +10,7 @@ docker --version
 ## clone 代码
 
 ```bash
-git clone https://github.com/angshihan777-droid/feiyu-annotation-platform.git
+git clone https://github.com/angshihan777-droid/feiyu-openlabel.git
 ```
 
 ## 一键启动 CE
